@@ -1,0 +1,98 @@
+{% extends 'students/base.html' %}
+
+{% block title %}Daily Attendance | Student Admin{% endblock %}
+
+{% block nav_attendance %}active{% endblock %}
+
+{% block page_title %}Daily Attendance{% endblock %}
+{% block page_subtitle %}Record present or absent logs for selected date{% endblock %}
+
+{% block content %}
+<!-- Date Selection Card -->
+<div class="filter-card">
+    <form method="GET" action="{% url 'attendance' %}" class="date-selector-form">
+        <label for="date-select" style="font-weight: 500; font-size: 0.95rem; color: var(--text-secondary);">Select Sheet Date:</label>
+        <input type="date" id="date-select" name="date" value="{{ selected_date }}" class="date-input">
+        <button type="submit" class="btn btn-secondary">Load Sheet</button>
+    </form>
+    
+    <div style="font-size: 0.95rem; color: var(--text-muted);">
+        Date Loaded: <strong style="color: var(--accent);">{{ selected_date }}</strong>
+    </div>
+</div>
+
+<!-- Attendance Form Sheet -->
+<div class="card-box">
+    <div class="card-box-header">
+        <h3 class="card-box-title">
+            <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+            </svg>
+            Student Attendance Roll
+        </h3>
+        <span class="badge badge-warning" style="font-weight: 600;">Total Students: {{ students|length }}</span>
+    </div>
+    
+    <form method="POST" action="{% url 'attendance' %}?date={{ selected_date }}">
+        {% csrf_token %}
+        
+        <div class="attendance-grid">
+            {% for s in students %}
+            <div class="attendance-row">
+                <div class="student-meta-cell">
+                    <div class="student-avatar">{{ s.name|slice:":1" }}</div>
+                    <div class="student-meta-details">
+                        <span class="student-name">{{ s.name }}</span>
+                        <span class="student-sub">Roll No: {{ s.roll }} | Course: {{ s.course }}</span>
+                    </div>
+                </div>
+                
+                <!-- Present/Absent Toggles -->
+                <!-- We look up the status from the dict dynamically in django template -->
+                {% widthratio 1 1 s.id as s_id %}
+                <div class="attendance-toggles">
+                    <!-- Present Button -->
+                    <input type="radio" 
+                           id="p_{{ s.id }}" 
+                           name="attendance_{{ s.id }}" 
+                           value="Present"
+                           {% for key, val in attendance_dict.items %}
+                               {% if key == s.id and val == 'Present' %}checked{% endif %}
+                           {% endfor %}>
+                    <label for="p_{{ s.id }}" class="attendance-toggle-btn present-label">
+                        Present
+                    </label>
+                    
+                    <!-- Absent Button -->
+                    <input type="radio" 
+                           id="a_{{ s.id }}" 
+                           name="attendance_{{ s.id }}" 
+                           value="Absent"
+                           {% for key, val in attendance_dict.items %}
+                               {% if key == s.id and val == 'Absent' %}checked{% endif %}
+                           {% endfor %}>
+                    <label for="a_{{ s.id }}" class="attendance-toggle-btn absent-label">
+                        Absent
+                    </label>
+                </div>
+            </div>
+            {% empty %}
+            <div style="text-align: center; padding: 40px 0; color: var(--text-muted);">
+                <p>No students available to register attendance. Please add students first.</p>
+            </div>
+            {% endfor %}
+        </div>
+        
+        {% if students %}
+        <div style="margin-top: 32px; display: flex; justify-content: flex-end;">
+            <button type="submit" class="btn btn-primary">
+                <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+                </svg>
+                Save Attendance Sheet
+            </button>
+        </div>
+        {% endif %}
+    </form>
+</div>
+{% endblock %}

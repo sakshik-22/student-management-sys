@@ -1,0 +1,104 @@
+{% extends 'students/base.html' %}
+
+{% block title %}Attendance Reports | Student Admin{% endblock %}
+
+{% block nav_reports %}active{% endblock %}
+
+{% block page_title %}Attendance Reports{% endblock %}
+{% block page_subtitle %}Analyze and track student attendance history and percentages{% endblock %}
+
+{% block content %}
+<!-- Statistics Header Cards -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+        </div>
+        <div class="stat-info">
+            <span class="stat-value">{{ total_sessions }}</span>
+            <span class="stat-label">Total Sessions Tracked</span>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon success">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+        </div>
+        <div class="stat-info">
+            <span class="stat-value">{{ overall_rate }}%</span>
+            <span class="stat-label">School Attendance Rate</span>
+        </div>
+    </div>
+</div>
+
+<!-- Detailed Student Breakdown Table -->
+<div class="card-box" style="padding: 16px 0;">
+    <div class="card-box-header" style="margin: 0 28px 16px 28px;">
+        <h3 class="card-box-title">
+            <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+            Student Attendance Analytics
+        </h3>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th style="padding-left: 28px;">Student Details</th>
+                    <th>Roll Number</th>
+                    <th>Sessions Logged</th>
+                    <th>Days Present</th>
+                    <th>Days Absent</th>
+                    <th style="padding-right: 28px;">Attendance Rate</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in report %}
+                <tr>
+                    <td style="padding-left: 28px;">
+                        <div class="student-meta-cell">
+                            <div class="student-avatar">{{ row.student.name|slice:":1" }}</div>
+                            <div class="student-meta-details">
+                                <span class="student-name">{{ row.student.name }}</span>
+                                <span class="student-sub">{{ row.student.course }}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <code style="background-color: var(--bg-surface); padding: 4px 8px; border-radius: var(--border-radius-sm); border: 1px solid var(--border-color); color: var(--accent);">{{ row.student.roll }}</code>
+                    </td>
+                    <td>{{ row.total_days }} / {{ total_sessions }}</td>
+                    <td style="color: var(--success); font-weight: 500;">{{ row.present_days }}</td>
+                    <td style="color: var(--danger); font-weight: 500;">{{ row.absent_days }}</td>
+                    <td style="padding-right: 28px;">
+                        {% if row.rate >= 75 %}
+                        <span class="badge badge-success">{{ row.rate }}% (Good)</span>
+                        {% elif row.rate >= 50 %}
+                        <span class="badge badge-warning">{{ row.rate }}% (Warning)</span>
+                        {% else %}
+                        <span class="badge badge-danger">{{ row.rate }}% (Low)</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 40px; color: var(--text-muted);">
+                        <p>No attendance data has been logged yet.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

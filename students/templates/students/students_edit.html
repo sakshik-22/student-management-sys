@@ -1,0 +1,49 @@
+{% extends 'students/base.html' %}
+
+{% block title %}Edit Student Profile | Student Admin{% endblock %}
+
+{% block nav_students %}active{% endblock %}
+
+{% block page_title %}Edit Student Profile{% endblock %}
+{% block page_subtitle %}Update profile information for {{ student.name }}{% endblock %}
+
+{% block content %}
+<div class="card-box">
+    <div class="card-box-header">
+        <h3 class="card-box-title">
+            <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+            </svg>
+            Edit Student Details
+        </h3>
+    </div>
+    
+    <form method="POST" class="custom-form">
+        {% csrf_token %}
+        
+        {% for field in form %}
+        <div class="form-group">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}
+            <div style="color: var(--danger); font-size: 0.8rem; margin-top: 4px;">
+                {{ field.errors.0 }}
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+        
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                </svg>
+                Update Profile
+            </button>
+            <a href="{% url 'students_list' %}" class="btn btn-secondary">
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends 'students/base.html' %}
+
+{% block title %}Add New Student | Student Admin{% endblock %}
+
+{% block nav_add %}active{% endblock %}
+
+{% block page_title %}Add New Student{% endblock %}
+{% block page_subtitle %}Create a new student profile in the database{% endblock %}
+
+{% block content %}
+<div class="card-box">
+    <div class="card-box-header">
+        <h3 class="card-box-title">
+            <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+            </svg>
+            Student Information Form
+        </h3>
+    </div>
+    
+    <form method="POST" class="custom-form">
+        {% csrf_token %}
+        
+        {% for field in form %}
+        <div class="form-group">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}
+            <div style="color: var(--danger); font-size: 0.8rem; margin-top: 4px;">
+                {{ field.errors.0 }}
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+        
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                Save Student
+            </button>
+            <a href="{% url 'students_list' %}" class="btn btn-secondary">
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}
